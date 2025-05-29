@@ -25,6 +25,78 @@ A lightweight web-based application that provide high performance URL shortening
 
 ---
 
+## Authentication using JWT (Json Web Token)
+
+![JWT Authentication Process](./diagram/JWT-authentication.png)
+
+- Tokens are sent using HTTP Authorized header.
+
+> **Format** → `Authorization: Bearer <token>`
+
+In its compact form, JSON Web Tokens consist of three parts separated by dots (.), which are:
+
+- Header
+- Payload
+- Signature
+
+Therefore, a JWT typically looks like the: `xxxxx.yyyyy.zzzzz`
+
+### JWT Implementation Files
+
+- `JwtUtils` → Contains utility methods for generating, parsing, and validating JWTs. Inclues:
+  - Generating a token from username
+  - Validating a JWT
+  - Extracting the username from a token
+
+- `JwtAutheticationFilter` → Filters incoming requests to **check for a valid JWT in the header**, setting the authentication context if the token is valid.
+  - Intercepts HTTP requests.
+  - Extracts JWT from request header, validates it.
+  - Configures the Spring Security context with user details if the token is valid.
+
+- `JwtAutheticationResponse` → DTO for JWT authentication respose.
+
+- `SecurityConfig` → Configures Spring Security files & rules for the application. Sets up the secuirty filter chain, permitting or denying the access based on paths and roles.
+
+### Understand `UserDetailsServiceImpl`
+
+> Spring Security has its own **inbuilt implemenation** of User which would work, but in most of the cases custom implementation is needed.
+
+#### `UserDetailsServiceImpl`
+
+- This is a service that loads user details from the database.
+- Bridges the gap between the database (User entity) and Spring Security (User Details interface).
+
+#### `UserDetailsImpl`
+
+- This is a *custom implementation* of Spring Security's `UserDetails` interface.
+- Provides a Spring Security-compatible representation of the user for authentication and authorization.
+
+### Maven dependencies for JWT
+
+Refer to the [Official GitHub](https://github.com/jwtk/jjwt) for [Maven dependencies for JWT](https://github.com/jwtk/jjwt?tab=readme-ov-file#maven). Add them to `pom.xml` file.
+
+```xml
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.12.6</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.12.6</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.12.6</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+---
+
 ### Author
 
 - [Soumo Sarkar](https://www.linkedin.com/in/soumo-sarkar/)
