@@ -97,6 +97,54 @@ Refer to the [Official GitHub](https://github.com/jwtk/jjwt) for [Maven dependen
 
 ---
 
+## Custom Security Configuration
+
+Defines the security rules for handling HTTP requests.
+
+### Configure `JwtAuthenticationFilter` in filter chain
+
+- Spring Security recongnizes it as a filter that will only be executed *once per request*.
+- By default, Spring Security doesn't automatically include your custom filter (`JwtAuthenticationFilter`) in the filter chain unless you explicitly add it.
+
+### Configure `DaoAuthenticationProvider`
+
+- It's a pre-built class in Spring Security.
+- Sets up how authentication is handled by Spring Security.
+- `DaoAuthenticationProvider` is an implementation of `AuthenticationProvider` that **validates user credentials** during login. It uses:
+  - A `UserDetailsService` to load user details (typically from a database)
+  - A `PasswordEncoder` to check credentials (e.g., hashed password verification)
+
+### Bean for `PasswordEncoder`
+
+```java
+@Bean
+public PasswordEncoder passwordEncoder() {
+  return new BCryptPasswordEncoder();
+}
+```
+
+- Creates a **singleton bean** of `PasswordEncoder` using `BCrypt`.
+- `BCryptPasswordEncoder` hashes user passwords securely.
+- Used during:
+  - **Registration**: To hash and store password.
+  - **Login**: To compare raw password with the hashed one stored in DB.
+
+> Passwords must never be stored or compared as plain text.
+
+### Bean for `AuthenticationManager`
+
+```java
+@Bean
+public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    return config.getAuthenticationManager();
+}
+```
+
+- This *integrates* cleanly with your existing `DaoAuthenticationProvider`.
+- Spring uses the `AuthenticationManager` built from our custom security config (which includes our custom `DaoAuthenticationProvider`).
+
+---
+
 ### Author
 
 - [Soumo Sarkar](https://www.linkedin.com/in/soumo-sarkar/)
