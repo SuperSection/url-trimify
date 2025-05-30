@@ -41,28 +41,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       String jwtToken = jwtTokenProvider.getJwtFromHeader(request);
 
       // Validate Token
-      if (jwtToken == null || !jwtTokenProvider.validateJwtToken(jwtToken)) {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-      }
+      if (jwtToken != null && jwtTokenProvider.validateJwtToken(jwtToken)) {
+        // If valid, extract username and set authentication
+        String username = jwtTokenProvider.getUsernameFromJwtToken(jwtToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-      // If valid, get user details
-      String username = jwtTokenProvider.getUsernameFromJwtToken(jwtToken);
-      UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-      // Load the user & set authentication in the context
-      if (userDetails != null) {
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            userDetails, null, userDetails.getAuthorities()
-          );
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // If user details are found, set the authentication in the security context
+        if (userDetails != null) {
+          UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+              userDetails, null, userDetails.getAuthorities()
+            );
+          authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
       }
-    } catch (IOException | UsernameNotFoundException e) {
+    } catch (UsernameNotFoundException e) {
       throw new ServletException("JWT authentication failed: " + e.getMessage(), e);
-    } finally {
-      // Continue the filter chain
-      filterChain.doFilter(request, response);
     }
+
+    // Continue the filter chain only if everything is fine
+    filterChain.doFilter(request, response);
   }
 
 }

@@ -11,6 +11,8 @@ import com.supersection.trimify.dto.RegisterRequest;
 import com.supersection.trimify.model.User;
 import com.supersection.trimify.service.UserService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,12 +25,18 @@ public class AuthController {
   }
 
   @PostMapping("/public/login")
-  public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<?> loginUser(@RequestBody @Valid LoginRequest loginRequest) {
     return ResponseEntity.ok(userService.authenticate(loginRequest));
   }
 
   @PostMapping("/public/register")
-  public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+  public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterRequest registerRequest) {
+    if (userService.isUsernameAlreadyTaken(registerRequest.getUsername())) {
+      return ResponseEntity.badRequest().body("Username is already taken");
+    }
+    if (userService.isEmailAlreadyRegistered(registerRequest.getEmail())) {
+      return ResponseEntity.badRequest().body("Email is already registered");
+    }
     User user = new User();
     user.setUsername(registerRequest.getUsername());
     user.setPassword(registerRequest.getPassword());

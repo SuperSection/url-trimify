@@ -39,12 +39,19 @@ public class UserService {
   public JwtAuthenticationResponse authenticate(LoginRequest loginRequest) {
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
-            loginRequest.getUsername(), loginRequest.getPassword()
-        )
-    );
+            loginRequest.getUsername(), loginRequest.getPassword())
+        );
     SecurityContextHolder.getContext().setAuthentication(authentication);
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     String jwtToken = jwtUtils.generateJwtToken(userDetails);
     return new JwtAuthenticationResponse(jwtToken);
+  }
+
+  public boolean isUsernameAlreadyTaken(String username) {
+    return userRepository.existsByUsername(username);
+  }
+
+  public boolean isEmailAlreadyRegistered(String email) {
+    return userRepository.existsByEmail(email);
   }
 }
