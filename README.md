@@ -211,6 +211,46 @@ return new JwtAuthenticationResponse(jwtToken);
 
 ---
 
+## Auth Request Validation
+
+### Dependency Required
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+```
+
+### Important Validation Annotations
+
+Annotate DTO fields with the following annotations:
+
+- `@NotBlank` → Ensures field is not null, empty, or whitespace (applicable ONLY for **String**)
+- `@Email` → Validates structure of an email address
+- `@Size(min=8)` → Ensures the field is at least 8 characters long
+- `@NotEmpty` → Checks for not null and not empty (`size() > 0` or `length > 0`) (applicable for Strings, Collections, Maps, Arrays). It doesn't check for whitespace
+
+### `@Valid` Annotation in Controller
+
+- Spring only **triggers validation on DTO fields** when the request body is *annotated with `@Valid`*.
+- Use `@Valid` in **controller method parameters**.
+
+> Without `@Valid`, validation annotations are ignored, and invalid data may reach the business logic.
+
+### Why `GlobalExceptionHandler` is Needed?
+
+- When *validation fails*, Spring throws a `MethodArgumentNotValidException`. To return clean, structured error responses, you must **handle this exception globally**.
+- Implement `@RestControllerAdvice` to handle exceptions globally.
+
+**Benefits**:
+
+- Returns field-specific error messages in JSON format
+- Keeps controller code clean and focused
+- Provides centralized error handling
+
+---
+
 ### Author
 
 - [Soumo Sarkar](https://www.linkedin.com/in/soumo-sarkar/)
