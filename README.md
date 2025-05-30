@@ -61,15 +61,16 @@ Therefore, a JWT typically looks like the: `xxxxx.yyyyy.zzzzz`
 
 > Spring Security has its own **inbuilt implemenation** of User which would work, but in most of the cases custom implementation is needed.
 
-#### `UserDetailsServiceImpl`
+#### `UserDetailsImpl` — The User Identity Model
 
-- This is a service that loads user details from the database.
-- Bridges the gap between the database (User entity) and Spring Security (User Details interface).
-
-#### `UserDetailsImpl`
-
-- This is a *custom implementation* of Spring Security's `UserDetails` interface.
+- This is a *custom implementation* of Spring Security's `UserDetails` interface, which represents the authenticated user's information.
 - Provides a Spring Security-compatible representation of the user for authentication and authorization.
+
+#### `UserDetailsServiceImpl` — The User Lookup Logic
+
+- This is a *custom implementation* of `UserDetailsService`, which is a service interface provided by Spring Security.
+- Spring calls this class to **fetch user data from your database** based on the username.
+- Bridges the gap between the database (User entity) and Spring Security (User Details interface).
 
 ### Maven dependencies for JWT
 
@@ -142,6 +143,71 @@ public AuthenticationManager authenticationManager(AuthenticationConfiguration c
 
 - This *integrates* cleanly with your existing `DaoAuthenticationProvider`.
 - Spring uses the `AuthenticationManager` built from our custom security config (which includes our custom `DaoAuthenticationProvider`).
+
+---
+
+## Build Authentication – Login
+
+### 1. Receive User Login Input
+
+```java
+public JwtAuthenticationResponse authenticate(LoginRequest loginRequest)
+```
+
+This method starts by accepting a `LoginRequest` object containing the user's username and password.
+
+### 2. Perform Authentication with `AuthenticationManager`
+
+```java
+Authentication authentication = authenticationManager.authenticate(
+    new UsernamePasswordAuthenticationToken(
+        loginRequest.getUsername(), loginRequest.getPassword()
+    )
+);
+```
+
+1. Creates a `UsernamePasswordAuthenticationToken` using the credentials provided by the user.
+
+2. Passes it to the authenticationManager to authenticate the user:
+    - Behind the scenes, Spring uses your configured `DaoAuthenticationProvider`.
+    - It will call `UserDetailsServiceImpl.loadUserByUsername()`.
+    - *Compares the provided password* (raw) with the hashed one from DB using `PasswordEncoder`.
+
+3. If authentication is **successful**, it returns an `Authentication` object.
+
+> If authentication **fails**, Spring throws an exception (e.g., `BadCredentialsException`).
+
+### 3. Store Authentication in Security Context
+
+```java
+SecurityContextHolder.getContext().setAuthentication(authentication);
+```
+
+1. After successful authentication, you **store** the `Authentication` object in **Spring Security’s context**.
+
+2. This sets the current user as "authenticated" for the rest of the request lifecycle.
+
+3. Future authorization checks (like `@PreAuthorize`) will use this context.
+
+### 4. Extract User Details from Principal
+
+```java
+UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+```
+
+1. Retrieves the authenticated user’s details from the `Authentication` object.
+
+2. `getPrincipal()` returns the object returned by your `UserDetailsService` — in this case, your custom `UserDetailsImpl`.
+
+### 5. Generate JWT Token & Return in Custom Response Object
+
+```java
+String jwtToken = jwtUtils.generateJwtToken(userDetails);
+return new JwtAuthenticationResponse(jwtToken);
+```
+
+1. Calls a utility method (`JwtUtils`) to generate a JWT token.
+2. Returns the token wrapped in a response DTO.
 
 ---
 
