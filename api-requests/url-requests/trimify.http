@@ -4,5 +4,5 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "originalUrl": "https://www.example.com"
+    "originalUrl": "https://aws.amazon.com/"
 }

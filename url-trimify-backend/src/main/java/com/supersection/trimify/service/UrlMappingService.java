@@ -1,6 +1,7 @@
 package com.supersection.trimify.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
@@ -55,6 +56,13 @@ public class UrlMappingService {
     }
 
     return shortUrl.toString();
+  }
+
+  public List<UrlMappingDTO> getUrlsByUser(User user) {
+    return urlMappingRepository.findByUser(user)
+        .stream()
+        .map(this::convertToDto)
+        .toList();
   }
 
 }
