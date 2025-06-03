@@ -24,6 +24,6 @@ logging:
   level:
     '[org.springframework.security]': DEBUG
     '[com.supersection.trimify]': DEBUG
-    '[org.springframework.web]': DEBUG
-    '[org.springframework]': DEBUG
-    '[org.springframework.web.servlet]': TRACE
+    # '[org.springframework.web]': DEBUG
+    # '[org.springframework]': DEBUG
+    # '[org.springframework.web.servlet]': TRACE
