@@ -3,22 +3,25 @@ package com.supersection.trimify.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.supersection.trimify.dto.ClickEventDTO;
 import com.supersection.trimify.dto.UrlMappingDTO;
 import com.supersection.trimify.model.UrlMapping;
 import com.supersection.trimify.model.User;
+import com.supersection.trimify.repository.ClickEventRepository;
 import com.supersection.trimify.repository.UrlMappingRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UrlMappingService {
 
   private final UrlMappingRepository urlMappingRepository;
-
-  public UrlMappingService(UrlMappingRepository urlMappingRepository) {
-    this.urlMappingRepository = urlMappingRepository;
-  }
+  private final ClickEventRepository clickEventRepository;
 
   public UrlMappingDTO createShortUrl(String originalUrl, User user) {
     String shortUrl = generateShortUrl();
@@ -63,6 +66,19 @@ public class UrlMappingService {
         .stream()
         .map(this::convertToDto)
         .toList();
+  }
+
+  public List<ClickEventDTO> getClickEventsByDate(String shortUrl, LocalDateTime start, LocalDateTime end) {
+    UrlMapping urlMapping = urlMappingRepository.findByShortUrl(shortUrl);
+    if (urlMapping != null) {
+      return clickEventRepository.findByUrlMappingAndClickDateBetween(urlMapping, start, end)
+          .stream()
+          .collect(Collectors.groupingBy(click -> click.getClickDate().toLocalDate(), Collectors.counting()))
+          .entrySet().stream()
+          .map(entry -> new ClickEventDTO(entry.getKey(), entry.getValue()))
+          .collect(Collectors.toList());
+    }
+    return null;
   }
 
 }
