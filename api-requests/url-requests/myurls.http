@@ -1,3 +1,3 @@
 ### Get My Shortened URLs
 GET http://localhost:8080/api/urls/myurls
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzb21ldXNlciIsInJvbGVzIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzQ4OTgwMjUzLCJleHAiOjE3NDkwMTYyNTN9.tymx7avzOvjsy9iI6ywkmhE5nPIe9qePBxRKTbx2KwoMMSK82cJxYzDT4oBQVcEjAcaJy2INS2rXrDDWD0D5Fw

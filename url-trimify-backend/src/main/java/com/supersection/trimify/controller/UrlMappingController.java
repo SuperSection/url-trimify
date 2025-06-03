@@ -1,6 +1,7 @@
 package com.supersection.trimify.controller;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -76,6 +77,23 @@ public class UrlMappingController {
     LocalDateTime end = LocalDateTime.parse(endDate, formatter);
     List<ClickEventDTO> clickEventAnalytics = urlMappingService.getClickEventsByDate(shortUrl, start, end);
     return ResponseEntity.ok(clickEventAnalytics);
+  }
+
+
+  @GetMapping("/totalClicks")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<Map<LocalDate, Long>> getTotalClicksByDate(
+      Principal principal,
+      @RequestParam("startDate") String startDate,
+      @RequestParam("endDate") String endDate
+  ) {
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    LocalDate start = LocalDate.parse(startDate, formatter);
+    LocalDate end = LocalDate.parse(endDate, formatter);
+
+    User user = userService.findByUsername(principal.getName());
+    Map<LocalDate, Long> totalClicks = urlMappingService.getTotalClicksByUserAndDate(user, start, end);
+    return ResponseEntity.ok(totalClicks);
   }
 
 }
