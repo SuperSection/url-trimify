@@ -1,0 +1,8 @@
+### Login a user
+POST http://localhost:8080/api/auth/public/login
+Content-Type: application/json
+
+{
+    "username": "some_user",
+    "password": "some_pass"
+}

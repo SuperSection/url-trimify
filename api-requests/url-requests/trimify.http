@@ -1,0 +1,8 @@
+### URL Shortening Request
+POST http://localhost:8080/api/urls/trimify
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "originalUrl": "https://www.example.com"
+}

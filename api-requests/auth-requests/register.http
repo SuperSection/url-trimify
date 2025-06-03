@@ -1,0 +1,9 @@
+### Register a new user
+POST http://localhost:8080/api/auth/public/register
+Content-Type: application/json
+
+{
+    "email": "supersection@gmail.com",
+    "username": "some_user",
+    "password": "some_pass"
+}
