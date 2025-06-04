@@ -1,1 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
 @import "tailwindcss" source("../src");
+@source "../index.html";
+
+@theme {
+  --font-roboto: "Roboto", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+
+  --color-custom-gradient: linear-gradient(to right, #3b82f6, #9333ea), /* from-blue-500 to-purple-600 */
+  --color-custom-gradient-2: linear-gradient(to left, #3b82f6, #f43f5e), /* from-blue-500 to-rose-500 */
+  --color-card-gradient: linear-gradient(to right, #38b2ac, #4299e1),   /* from-teal-500 to-blue-400 */
+
+  --color-navbarColor: #ffffff,
+  --color-btnColor: #3364F7,
+  --color-linkColor: #2a5bd7,
+
+  --shadow-custom: 0 0 15px rgba(0, 0, 0, 0.3),
+  --shadow-right: 10px 0px 10px -5px rgba(0, 0, 0, 0.3),
+}
