@@ -1,12 +1,16 @@
+import { BrowserRouter, Route, Routes } from "react-router"
+import LandingPage from './pages/LandingPage';
+import AboutPage from "./pages/AboutPage";
 
 function App() {
 
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">
-        Welcome to URL Trimify App!
-      </h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/about" element={<AboutPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
